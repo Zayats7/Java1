@@ -2,13 +2,15 @@ package App;
 
 import javax.swing.*;
 import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 
 public class GameWindow extends JFrame
 {
     private int winWidth = 800;
     private int winHeight = 600;
-    private int winPosX = 350;
-    private int winPosY = 100;
+    private int winPosX = 450;
+    private int winPosY = 200;
 
     private GameMap map;
     private JPanel gui;
@@ -20,11 +22,13 @@ public class GameWindow extends JFrame
     private JPanel gameInfo;
     private JLabel mapSizeInfo;
     private JLabel countEnemyInfo;
+    private JLabel healthEnemyInfo;
     private JLabel gameRoundInfo;
 
     private JPanel playerInfo;
     private JLabel playerHealthInfo;
     private JLabel playerStepsInfo;
+    private JLabel playerPowerInfo;
 
     private JPanel playerActions;
     private JButton moveUp;
@@ -43,7 +47,7 @@ public class GameWindow extends JFrame
     {
         prepareWindow();
 
-        map = new GameMap();
+        map = new GameMap(this);
 
         prepareGui();
 
@@ -68,20 +72,39 @@ public class GameWindow extends JFrame
         gui.add(gameInfo);
         gui.add(playerInfo);
         gui.add(playerActions);
-        gui.add(containerForGameLog);
+        gui.add(containerForGameLog, BorderLayout.SOUTH);
+
     }
 
     private void prepareGameControls()
     {
         gameControls = new JPanel();
         gameControls.setLayout(new GridLayout(2, 1));
-        gameControls.setBorder(BorderFactory.createLineBorder(Color.BLACK));
 
         btnStartGame = new JButton("Start Game!");
+        btnStartGame.addActionListener(new ActionListener()
+        {
+            @Override
+            public void actionPerformed(ActionEvent e)
+            {
+                recordLog("===Game Start===");
+                map.initGame();
+            }
+        });
+
         btnExitGame = new JButton("Exit Game!");
+        btnExitGame.addActionListener(new ActionListener()
+        {
+            @Override
+            public void actionPerformed(ActionEvent e)
+            {
+                System.exit(0);
+            }
+        });
 
         gameControls.add(btnStartGame);
         gameControls.add(btnExitGame);
+
     }
 
     private void prepareGameInfo()
@@ -90,14 +113,17 @@ public class GameWindow extends JFrame
         gameInfo.setLayout(new GridLayout(4, 1));
         gameInfo.setBorder(BorderFactory.createLineBorder(Color.BLACK));
 
-        gameRoundInfo = new JLabel("Current Round: ");
-        mapSizeInfo = new JLabel("Current map size: ");
-        countEnemyInfo = new JLabel("Current enemy count: ");
+        gameRoundInfo = new JLabel("Current Round: -");
+        mapSizeInfo = new JLabel("Current map size: -");
+        countEnemyInfo = new JLabel("Current enemy count: -");
+        healthEnemyInfo = new JLabel("Enemy HP: -");
 
         gameInfo.add(new JLabel("== Game Info =="));
         gameInfo.add(gameRoundInfo);
         gameInfo.add(mapSizeInfo);
         gameInfo.add(countEnemyInfo);
+        gameInfo.add(healthEnemyInfo);
+
     }
 
     private void preparePlayerInfo()
@@ -108,45 +134,120 @@ public class GameWindow extends JFrame
 
         playerHealthInfo = new JLabel("Health: - ");
         playerStepsInfo = new JLabel("Steps: -");
+        playerPowerInfo = new JLabel("Power: -");
 
         playerInfo.add(new JLabel("== Player Info =="));
         playerInfo.add(playerHealthInfo);
         playerInfo.add(playerStepsInfo);
+        playerInfo.add(playerPowerInfo);
+
     }
 
     private void preparePlayerActions()
     {
         playerActions = new JPanel();
-        playerActions.setLayout(new GridLayout(4,1));
+        playerActions.setLayout(new GridLayout(3, 3));
         playerActions.setBorder(BorderFactory.createLineBorder(Color.BLACK));
 
-        moveUp = new JButton("UP");
-        moveDown = new JButton("DOWN");
-        moveLeft = new JButton("LEFT");
-        moveRight = new JButton("RIGHT");
-        moveLeftUp = new JButton("LEFT-UP");
-        moveRightUp = new JButton("RIGHT-UP");
-        moveLeftDown = new JButton("LEFT-DOWN");
-        moveRightDown = new JButton("RIGHT-DOWN");
+        moveUp = new JButton("\uD83E\uDC79");
+        moveUp.addActionListener(new ActionListener()
+        {
+            @Override
+            public void actionPerformed(ActionEvent e)
+            {
+                map.update(GameMap.DIRECTION_UP);
+            }
+        });
 
-        playerActions.add(moveUp);
-        playerActions.add(moveDown);
-        playerActions.add(moveLeft);
-        playerActions.add(moveRight);
+        moveDown = new JButton("\uD83E\uDC7B");
+        moveDown.addActionListener(new ActionListener()
+        {
+            @Override
+            public void actionPerformed(ActionEvent e)
+            {
+                map.update(GameMap.DIRECTION_DOWN);
+            }
+        });
+
+        moveLeft = new JButton("\uD83E\uDC78");
+        moveLeft.addActionListener(new ActionListener()
+        {
+            @Override
+            public void actionPerformed(ActionEvent e)
+            {
+                map.update(GameMap.DIRECTION_LEFT);
+            }
+        });
+
+        moveRight = new JButton("\uD83E\uDC7A");
+        moveRight.addActionListener(new ActionListener()
+        {
+            @Override
+            public void actionPerformed(ActionEvent e)
+            {
+                map.update(GameMap.DIRECTION_RIGHT);
+            }
+        });
+
+        moveLeftUp = new JButton("\uD83E\uDC7C");
+        moveLeftUp.addActionListener(new ActionListener()
+        {
+            @Override
+            public void actionPerformed(ActionEvent e)
+            {
+                map.update(GameMap.DIRECTION_LEFT_UP);
+            }
+        });
+
+        moveRightUp = new JButton("\uD83E\uDC7D");
+        moveRightUp.addActionListener(new ActionListener()
+        {
+            @Override
+            public void actionPerformed(ActionEvent e)
+            {
+                map.update(GameMap.DIRECTION_RIGHT_UP);
+            }
+        });
+
+        moveLeftDown = new JButton("\uD83E\uDC7E");
+        moveLeftDown.addActionListener(new ActionListener()
+        {
+            @Override
+            public void actionPerformed(ActionEvent e)
+            {
+                map.update(GameMap.DIRECTION_LEFT_DOWN);
+            }
+        });
+
+        moveRightDown = new JButton("\uD83E\uDC7F");
+        moveRightDown.addActionListener(new ActionListener()
+        {
+            @Override
+            public void actionPerformed(ActionEvent e)
+            {
+                map.update(GameMap.DIRECTION_RIGHT_DOWN);
+            }
+        });
+
+
         playerActions.add(moveLeftUp);
+        playerActions.add(moveUp);
         playerActions.add(moveRightUp);
+        playerActions.add(moveLeft);
+        playerActions.add(new JLabel());
+        playerActions.add(moveRight);
         playerActions.add(moveLeftDown);
+        playerActions.add(moveDown);
         playerActions.add(moveRightDown);
+
     }
 
     private void prepareGameActionsLog()
     {
         gameLog = new JTextArea();
-       containerForGameLog = new JScrollPane(gameLog,
-               JScrollPane.VERTICAL_SCROLLBAR_ALWAYS,
-               JScrollPane.HORIZONTAL_SCROLLBAR_ALWAYS);
-        gameLog.setBorder(BorderFactory.createLineBorder(Color.BLACK));
-        containerForGameLog.setBorder(BorderFactory.createLineBorder(Color.BLACK));
+        containerForGameLog = new JScrollPane(gameLog);
+        gameLog.setEditable(false);
+        gameLog.setLineWrap(true);
     }
 
     private void prepareWindow()
@@ -154,8 +255,24 @@ public class GameWindow extends JFrame
         setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
         setLocation(winPosX, winPosY);
         setSize(winWidth, winHeight);
-        setTitle("Graphical App - Game");
-        setResizable(false);
+        setTitle("Graphical App: Game");
+        setResizable(true);
+    }
+
+    void recordLog(String msg)
+    {
+        gameLog.append(msg + "\n");
+    }
+
+    void refreshGameInfo()
+    {
+        gameRoundInfo.setText("Current Round: " + map.getCurrentLevelInfo()) ;
+        mapSizeInfo.setText("Current map size: " + map.getMapSizeInfo());
+        countEnemyInfo.setText("Current enemy count: " + map.getCountEnemiesInfo());
+        healthEnemyInfo.setText("Enemy HP: " + map.getHealthEnemiesInfo());
+        playerHealthInfo.setText("Health: " + map.getPlayerHPInfo());
+        playerStepsInfo.setText("Steps: " + map.getPlayerStepsInfo());
+        playerPowerInfo.setText("Power: " + map.getPlayerPowerInfo());
     }
 
 }
